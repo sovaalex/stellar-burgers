@@ -17,6 +17,10 @@
 .link {
   display: flex;
   text-decoration: none;
+  color: var(--text-primary-color);
+}
+
+.link :hover {
   color: var(--text-inactive-color);
 }
 
