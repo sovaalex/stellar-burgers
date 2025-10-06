@@ -33,6 +33,8 @@ type Story = StoryObj<typeof meta>;
 
 export const DefaultOrderDetails: Story = {
   args: {
-    orderNumber: 12
+    orderName: 'stellarburger',
+    orderNumber: 12,
+    orderStatus: 'done'
   }
 };

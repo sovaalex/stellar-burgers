@@ -15,12 +15,15 @@ export const constructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    addIngredient: (state, action: PayloadAction<TIngredient>) => {
+    addIngredient: (
+      state,
+      action: PayloadAction<TIngredient | TConstructorIngredient>
+    ) => {
       const ingredient = action.payload;
       if (ingredient.type === 'bun') {
         state.bun = ingredient;
       } else {
-        state.ingredients.push({ ...ingredient, id: crypto.randomUUID() });
+        state.ingredients.push(ingredient as TConstructorIngredient);
       }
     },
     removeIngredient: (state, action: PayloadAction<string>) => {

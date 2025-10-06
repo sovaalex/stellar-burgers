@@ -12,7 +12,11 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
     const dispatch = useDispatch();
 
     const handleAdd = () => {
-      dispatch(addIngredient(ingredient));
+      if (ingredient.type === 'bun') {
+        dispatch(addIngredient(ingredient));
+      } else {
+        dispatch(addIngredient({ ...ingredient, id: crypto.randomUUID() }));
+      }
     };
 
     return (

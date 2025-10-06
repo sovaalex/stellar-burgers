@@ -30,6 +30,7 @@ export const BurgerConstructor: FC = () => {
     }
     const ingredients = [
       constructorItems.bun._id,
+      constructorItems.bun._id,
       ...constructorItems.ingredients.map(
         (item: TConstructorIngredient) => item._id
       )
