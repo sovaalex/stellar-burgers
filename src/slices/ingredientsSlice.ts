@@ -43,3 +43,5 @@ export const ingredientsSlice = createSlice({
       });
   }
 });
+
+export { initialState as ingredientsInitialState };

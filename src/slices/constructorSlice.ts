@@ -52,3 +52,5 @@ export const {
   moveIngredient,
   clearConstructor
 } = constructorSlice.actions;
+
+export { initialState as constructorInitialState };

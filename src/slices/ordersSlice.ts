@@ -99,3 +99,5 @@ export const ordersSlice = createSlice({
 });
 
 export const { clearOrderModal, addOrderToHistory } = ordersSlice.actions;
+
+export { initialState as ordersInitialState };
