@@ -1,5 +1,5 @@
-import { URL } from '@api';
 import { deleteCookie, setCookie } from '../../../src/utils/cookie';
+import { SELECTORS } from '../../support/selectors';
 
 describe('Constructor Page E2E Test', () => {
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe('Constructor Page E2E Test', () => {
     cy.intercept('POST', `**/auth/login`, { fixture: 'login.json' }).as(
       'login'
     );
-    cy.visit('http://localhost:4000');
+    cy.visit('/');
     cy.wait('@getUser');
   });
 
@@ -33,44 +33,68 @@ describe('Constructor Page E2E Test', () => {
   it('должен загружать страницу конструктора и отображать ингредиенты', () => {
     cy.wait('@getIngredients');
     cy.contains('Соберите бургер').should('be.visible');
-    cy.get('[data-cy="ingredient-item"]').should('have.length.greaterThan', 0);
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"]`).should('have.length.greaterThan', 0);
   });
 
   it('должен добавлять ингредиенты в конструктор', () => {
     cy.wait('@getIngredients');
-    cy.get('[data-cy="ingredient-item"][data-type="bun"]').first().as('bun');
-    cy.get('@bun').find('[data-cy="add-button"]').click();
-    cy.get('[data-cy="ingredient-item"][data-type="main"]').first().as('main');
-    cy.get('@main').find('[data-cy="add-button"]').click();
-    cy.get('[data-cy="ingredient-item"][data-type="sauce"]').first().as('sauce');
-    cy.get('@sauce').find('[data-cy="add-button"]').click();
-    cy.get('[data-cy="constructor"]').should('contain', 'верх').and('contain', 'низ');
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"][data-type="bun"]`).first().within(() => {
+      cy.get(`${SELECTORS.ADD_BUTTON}`).click();
+    });
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"][data-type="main"]`).first().within(() => {
+      cy.get(`${SELECTORS.ADD_BUTTON}`).click();
+    });
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"][data-type="sauce"]`).first().within(() => {
+      cy.get(`${SELECTORS.ADD_BUTTON}`).click();
+    });
+    cy.get(`[data-cy="${SELECTORS.CONSTRUCTOR}"]`).should('contain', 'верх').and('contain', 'низ');
   });
 
   it('должен открывать и закрывать модальное окно ингредиента', () => {
     cy.wait('@getIngredients');
-    cy.get('[data-cy="ingredient-item"]').first().click();
-    cy.get('[data-cy="modal"]').should('be.visible');
-    cy.get('[data-cy="modal-close"]').click();
-    cy.get('[data-cy="modal"]').should('not.exist');
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"]`).first().click();
+    cy.get(`[data-cy="${SELECTORS.MODAL}"]`).should('be.visible');
+    cy.get(`[data-cy="${SELECTORS.MODAL}"]`).within(() => {
+      cy.get('img')
+        .should('have.attr', 'src')
+        .and('include', 'bun-02-large.png');
+      cy.contains('Краторная булка N-200i').should('be.visible');
+      cy.contains('80').should('be.visible');
+      cy.contains('24').should('be.visible');
+      cy.contains('53').should('be.visible');
+      cy.contains('420').should('be.visible');
+    });
+    cy.get(`[data-cy="${SELECTORS.MODAL_CLOSE}"]`).click();
+    cy.get(`[data-cy="${SELECTORS.MODAL}"]`).should('not.exist');
+  });
+
+  it('должен закрывать модальное окно ингредиента клавишей Escape', () => {
+    cy.wait('@getIngredients');
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"]`).first().click();
+    cy.get(`[data-cy="${SELECTORS.MODAL}"]`).should('be.visible');
+    cy.get('body').type('{esc}');
+    cy.get(`[data-cy="${SELECTORS.MODAL}"]`).should('not.exist');
   });
 
   it('должен оформлять заказ и проверять модальное окно', () => {
     cy.wait('@getIngredients');
-    cy.get('[data-cy="ingredient-item"][data-type="bun"]').first().as('bun');
-    cy.get('@bun').find('[data-cy="add-button"]').click();
-    cy.get('[data-cy="ingredient-item"][data-type="main"]').first().as('main');
-    cy.get('@main').find('[data-cy="add-button"]').click();
-    cy.get('[data-cy="ingredient-item"][data-type="sauce"]').first().as('sauce');
-    cy.get('@sauce').find('[data-cy="add-button"]').click();
-    cy.get('[data-cy="constructor"]').should('contain', 'верх').and('contain', 'низ');
-    cy.get('[data-cy="order-button"]').click();
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"][data-type="bun"]`).first().within(() => {
+      cy.get(`${SELECTORS.ADD_BUTTON}`).click();
+    });
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"][data-type="main"]`).first().within(() => {
+      cy.get(`${SELECTORS.ADD_BUTTON}`).click();
+    });
+    cy.get(`[data-cy="${SELECTORS.INGREDIENT_ITEM}"][data-type="sauce"]`).first().within(() => {
+      cy.get(`${SELECTORS.ADD_BUTTON}`).click();
+    });
+    cy.get(`[data-cy="${SELECTORS.CONSTRUCTOR}"]`).should('contain', 'верх').and('contain', 'низ');
+    cy.get(`[data-cy="${SELECTORS.ORDER_BUTTON}"]`).click();
     cy.wait('@placeOrder');
-    cy.get('[data-cy="modal"]').should('be.visible');
+    cy.get(`[data-cy="${SELECTORS.MODAL}"]`).should('be.visible');
     cy.contains('Space Burger').should('be.visible');
     cy.contains('37865').should('be.visible');
-    cy.get('[data-cy="modal-close"]').click();
-    cy.get('[data-cy="modal"]').should('not.exist');
-    cy.get('[data-cy="constructor"]').should('not.contain', 'верх').and('not.contain', 'низ');
+    cy.get(`[data-cy="${SELECTORS.MODAL_CLOSE}"]`).click();
+    cy.get(`[data-cy="${SELECTORS.MODAL}"]`).should('not.exist');
+    cy.get(`[data-cy="${SELECTORS.CONSTRUCTOR}"]`).should('not.contain', 'верх').and('not.contain', 'низ');
   });
 });
