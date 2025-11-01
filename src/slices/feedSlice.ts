@@ -39,3 +39,5 @@ export const feedSlice = createSlice({
       });
   }
 });
+
+export { initialState as feedInitialState };
